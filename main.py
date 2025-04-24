@@ -187,7 +187,14 @@ async def main():
     app.add_handler(CallbackQueryHandler(button))
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), forward_message))
 
+    async def post_init(app):
     app.job_queue.run_repeating(check_timeout, interval=5)
+
+await app.initialize()
+await post_init(app)
+await app.start()
+await app.updater.start_polling()
+await app.updater.idle()
 
     print("🚀 Bot is running...")
     await app.run_polling()
