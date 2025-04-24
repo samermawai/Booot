@@ -1,3 +1,4 @@
+import os
 import random
 import time
 import asyncio
@@ -5,13 +6,12 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackQueryHandler, ContextTypes
 )
+# Upar import section me add hona chahiye
 
-# Bot Token and Chat ID
-TOKEN = 'your-token-here'  # Use environment variable in production
-CHAT_ID = '-1002454111330'
-
-# Admin ID
-ADMIN_ID = 6600758539  # Replace with your Telegram user ID
+TOKEN = os.environ.get("TOKEN")
+CHAT_ID = os.environ.get("CHAT_ID")
+ADMIN_ID = int(os.environ.get("ADMIN_ID", "0"))
+ # Replace with your Telegram user ID
 
 # User management
 waiting_user = None
