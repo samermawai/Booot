@@ -193,8 +193,7 @@ async def main():
     await app.initialize()
     await post_init(app)
     await app.start()
-    await app.updater.start_polling()
-    await app.updater.idle()
+    await app.run_polling()
     #change
 
     print("🚀 Bot is running...")
