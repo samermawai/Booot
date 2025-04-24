@@ -6,12 +6,11 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import (
     ApplicationBuilder, CommandHandler, MessageHandler, filters, CallbackQueryHandler, ContextTypes
 )
-# Upar import section me add hona chahiye
 
+# Get environment variables
 TOKEN = os.environ.get("TOKEN")
 CHAT_ID = os.environ.get("CHAT_ID")
 ADMIN_ID = int(os.environ.get("ADMIN_ID", "0"))
- # Replace with your Telegram user ID
 
 # User management
 waiting_user = None
@@ -19,7 +18,7 @@ connections = {}
 all_users = set()
 waiting_start_time = None
 
-# Start Command
+# /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     all_users.add(user_id)
@@ -29,7 +28,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode='Markdown'
     )
 
-# Connect Command
+# /connect
 async def connect(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global waiting_user, waiting_start_time
     user_id = update.effective_user.id
@@ -59,7 +58,7 @@ async def connect(update: Update, context: ContextTypes.DEFAULT_TYPE):
         waiting_user = None
         waiting_start_time = None
 
-# Disconnect Command
+# /disconnect
 async def disconnect(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     if user_id in connections:
@@ -71,7 +70,7 @@ async def disconnect(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❌ You're not currently in a chat.")
 
-# Invite Command
+# /invite
 async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     all_users.add(user_id)
@@ -86,7 +85,7 @@ async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ Can't generate invite link. Make sure the bot is an admin.")
         print(f"Invite error: {e}")
 
-# Message Forwarding
+# Forward messages between connected users
 async def forward_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     all_users.add(user_id)
@@ -96,7 +95,7 @@ async def forward_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❌ You're not in a chat. Use /connect to start chatting.")
 
-# Reveal Identity
+# /reveal
 async def reveal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     if user_id in connections:
@@ -113,7 +112,7 @@ async def reveal(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❌ You're not connected. Use /connect to start chatting.")
 
-# Handle Button Clicks
+# Handle inline button clicks
 async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global waiting_user, waiting_start_time
     query = update.callback_query
@@ -145,7 +144,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await connect(update, context)
         await query.edit_message_text("🔄 Trying to connect again... Please wait ⌛")
 
-# Timeout Checker
+# Timeout for waiting users
 async def check_timeout(context: ContextTypes.DEFAULT_TYPE):
     global waiting_user, waiting_start_time
     if waiting_user is not None and time.time() - waiting_start_time > 45:
@@ -155,7 +154,7 @@ async def check_timeout(context: ContextTypes.DEFAULT_TYPE):
         waiting_user = None
         waiting_start_time = None
 
-# Broadcast
+# /broadcast (admin only)
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     if user_id != ADMIN_ID:
@@ -174,7 +173,7 @@ async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Failed to send to {uid}: {e}")
     await update.message.reply_text("✅ Broadcast sent successfully! 📬")
 
-# Main Function
+# Main app setup
 async def main():
     app = ApplicationBuilder().token(TOKEN).build()
 
@@ -189,12 +188,8 @@ async def main():
 
     async def post_init(app):
         app.job_queue.run_repeating(check_timeout, interval=5)
+
     app.post_init = post_init
-    await app.initialize()
-   # await app.initialize()
-    await post_init(app)
-    await app.start()
-    #change
 
     print("🚀 Bot is running...")
     await app.run_polling()
