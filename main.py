@@ -189,11 +189,11 @@ async def main():
 
     async def post_init(app):
         app.job_queue.run_repeating(check_timeout, interval=5)
-
+    app.post_init = post_init
     await app.initialize()
+   # await app.initialize()
     await post_init(app)
     await app.start()
-    await app.run_polling()
     #change
 
     print("🚀 Bot is running...")
