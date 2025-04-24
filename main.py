@@ -185,16 +185,17 @@ async def main():
     app.add_handler(CommandHandler("reveal", reveal))
     app.add_handler(CommandHandler("broadcast", broadcast))
     app.add_handler(CallbackQueryHandler(button))
-    app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), forward_message))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, forward_message))
 
- async def post_init(app):
-    app.job_queue.run_repeating(check_timeout, interval=5)
+    async def post_init(app):
+        app.job_queue.run_repeating(check_timeout, interval=5)
 
-await app.initialize()
-await post_init(app)
-await app.start()
-await app.updater.start_polling()
-await app.updater.idle()
+    await app.initialize()
+    await post_init(app)
+    await app.start()
+    await app.updater.start_polling()
+    await app.updater.idle()
+    #change
 
     print("🚀 Bot is running...")
     await app.run_polling()
