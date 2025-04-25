@@ -3,11 +3,17 @@ services:
     name: telegram-bot
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: bash start.sh
+    startCommand: gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
     envVars:
       - key: TOKEN
-        value: your_bot_token_here
-      - key: CHAT_ID
-        value: your_chat_id_here
+        value: your_bot_token
+      - key: WEBHOOK_URL
+        value: https://your-service-name.onrender.com
+      - key: WEBHOOK_SECRET
+        generateValue: true
+      - key: PORT
+        value: 8000
       - key: ADMIN_ID
-        value: your_admin_id_here
+        value: your_admin_id
+      - key: CHAT_ID
+        value: your_group_chat_id
