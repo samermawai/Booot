@@ -33,7 +33,6 @@ class ChatManager:
         self.connections = {}
         self.users = set()
         self.waiting_start_time = None
-        self.message_queue = asyncio.Queue()
 
 chat_manager = ChatManager()
 
@@ -94,8 +93,10 @@ async def reveal(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     partner_id = chat_manager.connections[user_id]
     keyboard = [
-        [InlineKeyboardButton("Accept ✅", callback_data=f"reveal_yes_{user_id}"),
-        [InlineKeyboardButton("Decline ❌", callback_data=f"reveal_no_{user_id}")]
+        [
+            InlineKeyboardButton("Accept ✅", callback_data=f"reveal_yes_{user_id}"),
+            InlineKeyboardButton("Decline ❌", callback_data=f"reveal_no_{user_id}")
+        ]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
     
@@ -136,7 +137,7 @@ async def invite(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     try:
-        invite_link = await context.bot.export_chat_invite_link(CHAT_ID)
+        invite_link = await context.bot.export_chat_invite_link(int(CHAT_ID))
         await update.message.reply_text(
             f"👥 Join our community:\n{invite_link}\n"
             "Share this link to invite friends!"
